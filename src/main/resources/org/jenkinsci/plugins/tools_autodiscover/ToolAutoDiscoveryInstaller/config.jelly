@@ -1,0 +1,68 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <!--
+    This Jelly script is used to produce the global configuration option.
+
+    Jenkins uses a set of tag libraries to provide uniformity in forms.
+    To determine where this tag is defined, first check the namespace URI,
+    and then look under $JENKINS/views/. For example, <f:section> is defined
+    in $JENKINS/views/lib/form/section.jelly.
+
+    It's also often useful to just check other similar scripts to see what
+    tags they use. Views are always organized according to its owner class,
+    so it should be straightforward to find them.
+  -->
+
+  <st:once>
+    <style type="text/css">
+      .tool-property-id {
+        visibility: collapse;
+        display: none;
+      }
+
+      .tool-property-value {
+        width: 100%;
+      }
+    </style>
+    <script type="text/javascript" src="${rootURL}/plugin/tools-autodiscover/js/config.js" />
+  </st:once>
+
+  <!-- ${instance} is a ToolAutoDiscoveryInstaller instance -->
+  <j:set var="currentHome" value="${instance.toolHome}"/>
+  <tr>
+    <td class="setting-leftspace"><st:nbsp/></td>
+    <td class="setting-name">
+      <j:out value="${descriptor.toolTypeDisplayName} instances found on system" />
+    </td>
+    <td class="setting-main">
+      <!-- build the dropdown menu -->
+      <select name="_.toolHome" class="setting-input tools-autodiscover-dropdown">
+        <j:forEach var="tool" items="${descriptor.toolInstallations}" varStatus="loop">
+          <j:if test="${currentHome==null}">
+            <j:set var="currentHome" value="${tool.home}" />
+          </j:if>
+          <j:set var="selected" value="${currentHome==tool.home}"/>
+          <f:option value="${tool.home}" selected="${selected}">${tool.name}</f:option>
+        </j:forEach>
+      </select>
+
+      <table class="tool-property-table" width="100%">
+        <tbody>
+          <tr class="tool-property-entry">
+            <td class="tool-property-id">path</td>
+            <td class="tool-property-name">Path</td>
+            <td class="tool-property-value">
+              <input type="text" class="setting-input"
+                     readonly="readonly" disabled="disabled"
+                     value="${currentHome}"/>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+    <!--
+      <td class="setting-help">
+        <a href="#" class="help-button" helpURL="${rootURL}${attrs.help}"><img src="${imagesURL}/16x16/help.png" alt="Help for feature: ${title}" height="16" width="16" /></a>
+      </td>
+    -->
+  </tr>
+</j:jelly>
